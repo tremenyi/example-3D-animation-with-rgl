@@ -8,9 +8,8 @@ library(viridis)
 
 #function that changes the surface colour used by a layer based on data from another source
 change_surface_colour <- function(target_orog, target_var, target_timestep, target_colour_palette){
-  rescaled_var <- scales::rescale(values(target_var[[target_timestep]]), c(1,length(target_colour_palette) ) )
-  reped_rescaled_var <- rep(rescaled_var, each=4)
-  target_orog$material$col <- target_colour_palette[reped_rescaled_var]
+  reped_target_var <- rep(target_var, each=4)
+  target_orog$material$col <- target_colour_palette[reped_rescaled_var] #quadmesh objects have 4 values to described each facet, so need to replicate the colour value to match each. 
   return(target_orog)
 } #close function change_surface_colour
 
@@ -37,6 +36,11 @@ cll <- brick(sprintf("%s/data/cll.nc", parent_directory)) #4D variable - lon, la
 clm <- brick(sprintf("%s/data/clm.nc", parent_directory))
 clh <- brick(sprintf("%s/data/clh.nc", parent_directory)) #4D variable - lon, lat, elevation, time; clh = percentage cover of 'high' cloud
 
+#tas_colours <- colorRampPalette(c("dodgerblue", "purple", "firebrick"))(100)
+tas_colours <- viridis(100)
+#rescale tas layer so it can be used as an index to the target colour palette
+values(tas) <- scales::rescale(values(tas), c(1,length(tas_colours) ) )
+
 #rescale cloud layers so they can be used as transparency (alpha) values, I have selected 0.9 as the top so that full cloud is still a bit see through in the animation.
 values(cll) <- scales::rescale(values(cll), to = c(0,0.9))
 values(clm) <- scales::rescale(values(clm), to = c(0,0.9))
@@ -53,8 +57,6 @@ orog_qm_cll <- quadmesh((orog_smooth/4)+1000)
 orog_qm_clm <- quadmesh((orog_smooth/6)+2000)
 orog_qm_clh <- quadmesh((orog_smooth/8)+4000)
 
-#tas_colours <- colorRampPalette(c("dodgerblue", "purple", "firebrick"))(100)
-tas_colours <- viridis(100)
 
 create_pngs_time_start <- Sys.time()
 
