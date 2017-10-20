@@ -1,3 +1,7 @@
+####################################
+#EXAMPLE ONLY - WILL NOT RUN - MISSING DATA FILES (too big for github)
+####################################
+
 library(rgl)
 library(anglr) #install this with devtools::install_github("hypertidy/anglr")
 library(raster)
